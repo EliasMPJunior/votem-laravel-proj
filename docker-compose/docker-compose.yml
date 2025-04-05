@@ -1,0 +1,44 @@
+services:
+  votem-app:
+    build:
+      context: ../src
+      dockerfile: ../docker-compose/manifests/dev.Dockerfile
+    container_name: votem-app
+    volumes:
+      - ../src:/app
+    ports:
+      - "3000:8000"
+    environment:
+      APP_ENV: local
+      APP_KEY: base64:placeholder
+      DB_CONNECTION: mysql
+      DB_HOST: votem-db
+      DB_PORT: 3306
+      DB_DATABASE: votem
+      DB_USERNAME: root
+      DB_PASSWORD: secret
+    depends_on:
+      - votem-db
+    networks:
+      - brasidata
+
+  votem-db:
+    image: mysql:8.0
+    container_name: votem-db
+    restart: always
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: votem
+      MYSQL_ROOT_PASSWORD: secret
+    volumes:
+      - ../data/mysql:/var/lib/mysql
+    networks:
+      - brasidata
+
+volumes:
+  votem-db:
+
+networks:
+  brasidata:
+    external: true
